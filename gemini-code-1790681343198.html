@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ 成語與語文語境戰場 P6 Master Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background-color: #1E1E2E;
+            color: #F8F8F2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+            background-color: #2B2B40;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 1px solid #3A3A52;
+        }
+
+        .top-bar {
+            background-color: #252538;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3A3A52;
+        }
+
+        .part-title {
+            color: #00E5FF;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .score { color: #FFD700; }
+        .lives { color: #FF5555; }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .stage-num {
+            color: #8D99AE;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .opt-btn {
+            background-color: #3A3A52;
+            color: #00E5FF;
+            border: 2px solid transparent;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .opt-btn:hover {
+            background-color: #00E5FF;
+            color: #1E1E2E;
+            transform: translateY(-2px);
+        }
+
+        .fill-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .fill-label {
+            color: #FF79C6;
+            font-weight: bold;
+        }
+
+        .fill-input {
+            background-color: #1E1E2E;
+            border: 2px solid #3A3A52;
+            color: #50FA7B;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            outline: none;
+            width: 100%;
+        }
+
+        .fill-input:focus {
+            border-color: #BD93F9;
+        }
+
+        .submit-btn {
+            background-color: #BD93F9;
+            color: #1E1E2E;
+            border: none;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #FF79C6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: #252538;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #3A3A52;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .modal-desc {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #E2E8F0;
+            text-align: left;
+            background: #1E1E2E;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .modal-btn {
+            background: #00E5FF;
+            color: #1E1E2E;
+            border: none;
+            padding: 10px 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .end-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .end-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .end-score {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        .restart-btn {
+            margin-top: 25px;
+            background-color: #00E5FF;
+            color: #1E1E2E;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <div id="part-title" class="part-title">PART 1: 成語戰場 (MC)</div>
+        <div class="stats">
+            <span class="score" id="score-val">⚡ SCORE: 0000</span>
+            <span class="lives" id="lives-val">HP: ❤️❤️❤️</span>
+        </div>
+    </div>
+
+    <div id="game-card" class="card-body">
+        <div id="stage-num" class="stage-num">STAGE 1 / 48</div>
+        <div id="question-text" class="question-text">載入中...</div>
+
+        <div id="mc-box" class="options-grid">
+            <button class="opt-btn" onclick="checkMC(0)"></button>
+            <button class="opt-btn" onclick="checkMC(1)"></button>
+            <button class="opt-btn" onclick="checkMC(2)"></button>
+            <button class="opt-btn" onclick="checkMC(3)"></button>
+        </div>
+
+        <div id="fill-box" class="fill-container hidden">
+            <label class="fill-label">⌨️ 請輸入解密答案：</label>
+            <input type="text" id="fill-input" class="fill-input" autocomplete="off" onkeydown="if(event.key==='Enter') checkFill()">
+            <button class="submit-btn" onclick="checkFill()">⚔️ 發射答案 (SUBMIT)</button>
+        </div>
+    </div>
+
+    <div id="end-screen" class="end-screen hidden">
+        <div id="end-title" class="end-title"></div>
+        <div id="end-score" class="end-score"></div>
+        <div id="end-desc" style="color:#F8F8F2;"></div>
+        <button class="restart-btn" onclick="initGame()">🔄 重新開始挑戰 (RESTART)</button>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <div id="modal-title" class="modal-title"></div>
+        <div id="modal-desc" class="modal-desc"></div>
+        <button class="modal-btn" onclick="closeModal()">繼續下一步</button>
+    </div>
+</div>
+
+<!-- 載入外部題目資料 -->
+<script src="questions.js"></script>
+
+<!-- 主程式邏輯 -->
+<script>
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let lives = 3;
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function initGame() {
+        score = 0;
+        lives = 3;
+        currentIndex = 0;
+
+        questions = JSON.parse(JSON.stringify(rawQuestions));
+        questions.forEach(q => {
+            if (q.type === 'mc') {
+                q.options = shuffle(q.options);
+            }
+        });
+
+        document.getElementById("end-screen").classList.add("hidden");
+        document.getElementById("game-card").classList.remove("hidden");
+        
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        if (currentIndex >= questions.length || lives <= 0) {
+            endGame();
+            return;
+        }
+
+        const q = questions[currentIndex];
+
+        document.getElementById("part-title").innerText = q.part;
+        document.getElementById("score-val").innerText = `⚡ SCORE: ${String(score).padStart(4, '0')}`;
+        document.getElementById("lives-val").innerText = `HP: ${'❤️'.repeat(lives)}`;
+        document.getElementById("stage-num").innerText = `STAGE ${currentIndex + 1} / ${questions.length}`;
+        document.getElementById("question-text").innerText = q.question;
+
+        const mcBox = document.getElementById("mc-box");
+        const fillBox = document.getElementById("fill-box");
+
+        if (q.type === "mc") {
+            mcBox.classList.remove("hidden");
+            fillBox.classList.add("hidden");
+            const btns = mcBox.querySelectorAll(".opt-btn");
+            btns.forEach((btn, idx) => {
+                btn.innerText = `[${String.fromCharCode(65 + idx)}] ${q.options[idx]}`;
+            });
+        } else {
+            mcBox.classList.add("hidden");
+            fillBox.classList.remove("hidden");
+            const input = document.getElementById("fill-input");
+            input.value = "";
+            input.focus();
+        }
+    }
+
+    function checkMC(idx) {
+        const q = questions[currentIndex];
+        const selected = q.options[idx];
+
+        if (selected === q.answer) {
+            score += 100;
+            showModal("⚔️ CRITICAL HIT!", `🎯 完美命中！得分 +100<br><br><b>【解析】</b>${q.explanation}`, "#50FA7B");
+        } else {
+            lives -= 1;
+            showModal("🛡️ SHIELD DAMAGED!", `💥 判定錯誤！損失 1 點生命值！<br><br>正確答案是：<b>${q.answer}</b><br><b>【解析】</b>${q.explanation}`, "#FF5555");
+        }
+    }
+
+    function checkFill() {
+        const q = questions[currentIndex];
+        const input = document.getElementById("fill-input").value.trim();
+
+        if (!input) {
+            alert("請輸入答案！");
+            return;
+        }
+
+        if (input === q.answer) {
+            score += 100;
+            showModal("⚔️ DECODE SUCCESS!", `🔓 解密成功！得分 +100<br><br><b>【解析】</b>${q.explanation}`, "#50FA7B");
+        } else {
+            lives -= 1;
+            showModal("🛡️ SHIELD DAMAGED!", `💥 解密失敗！損失 1 點生命值！<br>你的答案：${input}<br>正確答案是：<b>${q.answer}</b><br><br><b>【解析】</b>${q.explanation}`, "#FF5555");
+        }
+    }
+
+    function showModal(title, desc, color) {
+        const modal = document.getElementById("modal");
+        const titleEl = document.getElementById("modal-title");
+        titleEl.innerHTML = title;
+        titleEl.style.color = color;
+        document.getElementById("modal-desc").innerHTML = desc;
+        modal.style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("modal").style.display = "none";
+        currentIndex++;
+        renderQuestion();
+    }
+
+    function endGame() {
+        document.getElementById("game-card").classList.add("hidden");
+        const endScreen = document.getElementById("end-screen");
+        endScreen.classList.remove("hidden");
+
+        const titleEl = document.getElementById("end-title");
+        const descEl = document.getElementById("end-desc");
+
+        if (lives > 0) {
+            titleEl.innerText = "🏆 VICTORY! 完美通關";
+            titleEl.style.color = "#50FA7B";
+            descEl.innerText = "你已成功征服所有題目，展現了頂級語文實力！";
+        } else {
+            titleEl.innerText = "☠️ GAME OVER 挑戰失敗";
+            titleEl.style.color = "#FF5555";
+            descEl.innerText = "生命值已耗盡，整備裝備再來挑戰一次吧！";
+        }
+
+        document.getElementById("end-score").innerText = `最終得分：${String(score).padStart(4, '0')} PTS`;
+    }
+
+    initGame();
+</script>
+</body>
+</html>
