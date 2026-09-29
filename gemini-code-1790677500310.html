@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ 成語與語文語境戰場 P6 Master Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background-color: #1E1E2E;
+            color: #F8F8F2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+            background-color: #2B2B40;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 1px solid #3A3A52;
+        }
+
+        .top-bar {
+            background-color: #252538;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3A3A52;
+        }
+
+        .part-title {
+            color: #00E5FF;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .score { color: #FFD700; }
+        .lives { color: #FF5555; }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .stage-num {
+            color: #8D99AE;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .opt-btn {
+            background-color: #3A3A52;
+            color: #00E5FF;
+            border: 2px solid transparent;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .opt-btn:hover {
+            background-color: #00E5FF;
+            color: #1E1E2E;
+            transform: translateY(-2px);
+        }
+
+        .fill-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .fill-label {
+            color: #FF79C6;
+            font-weight: bold;
+        }
+
+        .fill-input {
+            background-color: #1E1E2E;
+            border: 2px solid #3A3A52;
+            color: #50FA7B;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            outline: none;
+            width: 100%;
+        }
+
+        .fill-input:focus {
+            border-color: #BD93F9;
+        }
+
+        .submit-btn {
+            background-color: #BD93F9;
+            color: #1E1E2E;
+            border: none;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #FF79C6;
+        }
+
+        /* Modal 彈窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: #252538;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #3A3A52;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .modal-desc {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #E2E8F0;
+            text-align: left;
+            background: #1E1E2E;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .modal-btn {
+            background: #00E5FF;
+            color: #1E1E2E;
+            border: none;
+            padding: 10px 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* 結算頁面 */
+        .end-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .end-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .end-score {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        .restart-btn {
+            margin-top: 25px;
+            background-color: #00E5FF;
+            color: #1E1E2E;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <div id="part-title" class="part-title">PART 1: 成語戰場 (MC)</div>
+        <div class="stats">
+            <span class="score" id="score-val">⚡ SCORE: 0000</span>
+            <span class="lives" id="lives-val">HP: ❤️❤️❤️</span>
+        </div>
+    </div>
+
+    <div id="game-card" class="card-body">
+        <div id="stage-num" class="stage-num">STAGE 1 / 48</div>
+        <div id="question-text" class="question-text">載入中...</div>
+
+        <!-- MC 題型組件 -->
+        <div id="mc-box" class="options-grid">
+            <button class="opt-btn" onclick="checkMC(0)"></button>
+            <button class="opt-btn" onclick="checkMC(1)"></button>
+            <button class="opt-btn" onclick="checkMC(2)"></button>
+            <button class="opt-btn" onclick="checkMC(3)"></button>
+        </div>
+
+        <!-- 填空題組件 -->
+        <div id="fill-box" class="fill-container hidden">
+            <label class="fill-label">⌨️ 請輸入解密答案：</label>
+            <input type="text" id="fill-input" class="fill-input" autocomplete="off" onkeydown="if(event.key==='Enter') checkFill()">
+            <button class="submit-btn" onclick="checkFill()">⚔️ 發射答案 (SUBMIT)</button>
+        </div>
+    </div>
+
+    <!-- 結算畫面 -->
+    <div id="end-screen" class="end-screen hidden">
+        <div id="end-title" class="end-title"></div>
+        <div id="end-score" class="end-score"></div>
+        <div id="end-desc" style="color:#F8F8F2;"></div>
+        <button class="restart-btn" onclick="initGame()">🔄 重新開始挑戰 (RESTART)</button>
+    </div>
+</div>
+
+<!-- 提示彈窗 -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <div id="modal-title" class="modal-title"></div>
+        <div id="modal-desc" class="modal-desc"></div>
+        <button class="modal-btn" onclick="closeModal()">繼續下一步</button>
+    </div>
+</div>
+
+<script>
+    const rawQuestions = [
+        // Part 1: 成語造句選擇題
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "這次比賽失敗的經驗是我們的（____），提醒我們下次不能再犯同樣的錯誤。", options: ["前車可鑑", "背道而馳", "故步自封", "後患無窮"], answer: "前車可鑑", explanation: "「前車可鑑」指先前的失敗經驗可以作為借鑑與教訓。" },
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "經過雙方坦誠地溝通交流後，過去累積的種種誤會終於（____）。", options: ["冰釋前嫌", "春風化雨", "指鹿為馬", "後生可畏"], answer: "冰釋前嫌", explanation: "「冰釋前嫌」指過去累積的誤會或仇恨像冰塊融化一樣完全消除。" },
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "這位年輕選手第一次參賽就刷新了校際紀錄，真是（____）！", options: ["後生可畏", "前車可鑑", "故步自封", "本末倒置"], answer: "後生可畏", explanation: "「後生可畏」讚賞年輕人富有潛質，後輩的成就不可限量。" },
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "我們必須徹底處理好水管漏水的問題，否則拖延下去恐怕（____）。", options: ["後患無窮", "背道而馳", "指鹿為馬", "冰釋前嫌"], answer: "後患無窮", explanation: "「後患無窮」指如果不解決問題，將來會留下沒有窮盡的禍害。" },
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "我們做事情應該踏實努力，如果只想靠碰運氣來獲得成功，做法實在與目標（____）。", options: ["背道而馳", "前車可鑑", "春風化雨", "故步自封"], answer: "背道而馳", explanation: "「背道而馳」比喻行動、方向或目標與原本的要求完全相反。" },
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "張老師多年來（____），培育出無數傑出的人才，深得學生尊敬。", options: ["春風化雨", "後生可畏", "指鹿為馬", "冰釋前嫌"], answer: "春風化雨", explanation: "「春風化雨」常用來讚賞老師溫和親切的教導與良師的潛移默化。" },
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "學習新知識必須勇於嘗試，如果總是（____），技術很快就會被淘汰。", options: ["故步自封", "背道而馳", "後患無窮", "前車可鑑"], answer: "故步自封", explanation: "「故步自封」指安於現狀、墨守成規，不肯求取進步。" },
+        { type: "mc", part: "PART 1: 成語戰場 (MC)", question: "那個奸臣在朝廷上（____），將明明是對的說成錯的，令大眾非常憤怒。", options: ["指鹿為馬", "春風化雨", "後生可畏", "冰釋前嫌"], answer: "指鹿為馬", explanation: "「指鹿為馬」比喻故意顛倒黑白、混淆是非。" },
+
+        // Part 2: 不供詞填充題
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "隊長把組員的工作合理（____），讓大家發揮各自的所長。", answer: "分配", explanation: "答案是「分配」。指分派安排各人的職務或資源。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "這場足球聯賽（____）非常激烈，兩隊都渴望爭奪冠軍。", answer: "競爭", explanation: "答案是「競爭」。指為了爭取勝負或優勢而互相角逐。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "叔叔（____）地從外地趕回來，只為出席外婆的八十大壽。", answer: "風塵僕僕", explanation: "答案是「風塵僕僕」。形容旅途奔波勞頓辛苦。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "郵差叔叔無論天氣有多惡劣，每天都（____）地為市民送信。", answer: "風雨無阻", explanation: "答案是「風雨無阻」。指風雨都阻擋不住，堅持進行。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "夜市的攤位售賣著（____）的小吃，吸引無數遊客前來。", answer: "五花八門", explanation: "答案是「五花八門」。比喻花樣繁多或變幻莫測。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "這件事情的經過非常複雜，背後的原因真是（____）。", answer: "一言難盡", explanation: "答案是「一言難盡」。指事情複雜，不是一句話能說得清楚的。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "學習如果不先打好基礎就只想衝高分，簡直是（____）。", answer: "本末倒置", explanation: "答案是「本末倒置」。指把主要和次要、輕和重顛倒了。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "研究人員（____）地進行實驗，終於突破了技術瓶頸。", answer: "日以繼夜", explanation: "答案是「日以繼夜」。指白天連著夜晚，不分晝夜地工作或學習。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "闖紅燈這種危險行為在繁忙的街頭（____），警方必須嚴加執法。", answer: "屢見不鮮", explanation: "答案是「屢見不鮮」。指常常見到，並不覺得新奇。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "我們做事要有獨立思考，切忌（____）跟風去購買不需要的東西。", answer: "盲目", explanation: "答案是「盲目」。比喻沒有主見，隨意跟著別人行動。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "為了迎接升中考試，姐姐放學後會去參加（____）班鞏固課業。", answer: "補習", explanation: "答案是「補習」。指在正常課業外另外學習補救。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "由於出門前沒有看氣象預報，我們被淋成了落湯雞，心情（____）透了。", answer: "糟糕", explanation: "答案是「糟糕」。指事情或情況壞到了極點。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "兩位頂尖棋手進行了一場（____）的對決，過程扣人心弦。", answer: "激烈", explanation: "答案是「激烈」。形容動作、變動或競爭非常劇烈熱烈。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "在教練的細心（____）下，我的羽毛球球技有了顯著進步。", answer: "指導", explanation: "答案是「指導」。指指示教導、帶領指引。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "老師親切地（____）學習有困難的學生，幫助他們找回自信。", answer: "輔導", explanation: "答案是「輔導」。指幫助、引導學習或情緒問題。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "持續鍛鍊身體對提升免疫力見到了極大的（____）。", answer: "成效", explanation: "答案是「成效」。指功效、效果與成就。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "運動員必須保持良好的心理素質，才能在比賽時發揮出最佳的（____）表現。", answer: "臨場", explanation: "答案是「臨場」。指到達現場、面對當時比賽或事情的實況。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "明明不是他做錯事卻被無辜責備，他心裏感到無比（____）。", answer: "委屈", explanation: "答案是「委屈」。指受到不公平的對待而心裏難過。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "半夜窗外突然傳來一聲巨響，把我從睡夢中（____）。", answer: "驚醒", explanation: "答案是「驚醒」。指受到驚嚇而從睡眠中醒來。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "遇到解決不了的難題時，大家可以聚在一起共同（____）對策。", answer: "商量", explanation: "答案是「商量」。指交換意見、共同討論。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "爸爸習慣每個月去一次（____）店，讓髮型師修剪頭髮。", answer: "理髮", explanation: "答案是「理髮」。指修剪或整理頭髮。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "他莊嚴地（____）自己會改過自新，不再讓父母失望。", answer: "發誓", explanation: "答案是「發誓」。指立下誓言、表示決心。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "這位燒臘店（____）手藝精湛，做出來的叉燒風味絕佳。", answer: "師傅", explanation: "答案是「師傅」。對有特長技能的人的尊稱。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "姐姐穿上了這件設計新穎的洋裝，看起來非常（____）。", answer: "時髦", explanation: "答案是「時髦」。形容人的穿著或樣式新穎合時宜。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "這條古老的泥土小路經過暴雨沖刷後，變得（____），極難步行。", answer: "坑坑窪窪", explanation: "答案是「坑坑窪窪」。形容地面高低不平、積水窪坑很多。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "弟弟平時有些（____），連看到小昆蟲都會嚇得躲起來。", answer: "膽小", explanation: "答案是「膽小」。形容膽子小、缺乏勇氣。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "我昨晚做了一個可怕的（____），夢見自己被怪獸追趕。", answer: "惡夢", explanation: "答案是「惡夢」。指讓人驚控不安的夢境。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "做事情必須認真嚴謹，絕不能（____）敷衍了事。", answer: "隨便", explanation: "答案是「隨便」。指不加限制、不嚴肅或不認真。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "校方正在討論如何（____）這批過期失效的舊器材。", answer: "處置", explanation: "答案是「處置」。指處理、安排事物。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "他在校慶話劇中（____）一位勇敢的將軍，深受大家讚賞。", answer: "扮演", explanation: "答案是「扮演」。指化裝成某種角色進行演出。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "經過多年的苦練，他已經能（____）地操作這台複雜的機器。", answer: "熟練", explanation: "答案是「熟練」。指工作或技術精熟運用靈自如。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "店員總是熱情地招待每一位光臨店舖的（____）。", answer: "顧客", explanation: "答案是「顧客」。指前往商店購買物品或消費的人。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "小狗興奮地（____）起尾巴，圍著主人轉個不停。", answer: "翹", explanation: "答案是「翹」。指一端向上仰起。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "看他擺出的專業（____），就知道他是一位武術高手。", answer: "架式", explanation: "答案是「架式」。指姿態、動作的樣式或氣勢。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "媽媽出門前用蒸氣熨斗把襯衫（____）得平平整整。", answer: "熨", explanation: "答案是「熨」。指用加熱的器具平整衣服。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "爸爸用剃刀把臉上的鬍鬚（____）得一乾二淨。", answer: "剃", explanation: "答案是「剃」。指用刀刮去毛髮。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "憑著勤奮努力，他獲頒了本年度的（____）學生獎學金。", answer: "優秀", explanation: "答案是「優秀」。指品德、才能或表現極好。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "長期的牙痛對他來說簡直是一種無比難受的（____）。", answer: "折磨", explanation: "答案是「折磨」。指使人在身體或精神上承受痛苦。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "妹妹苦苦（____）媽媽帶她去遊樂場玩耍。", answer: "央求", explanation: "答案是「央求」。指懇求、懇切請求。" },
+        { type: "fill", part: "PART 2: 生字解密 (INPUT)", question: "今天真（____），剛走到街上就碰巧遇到傾盆大雨。", answer: "倒霉", explanation: "答案是「倒霉」。指遇到了不順利或不幸運的事情。" }
+    ];
+
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let lives = 3;
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function initGame() {
+        score = 0;
+        lives = 3;
+        currentIndex = 0;
+
+        // 深拷貝並打亂選擇題選項
+        questions = JSON.parse(JSON.stringify(rawQuestions));
+        questions.forEach(q => {
+            if (q.type === 'mc') {
+                q.options = shuffle(q.options);
+            }
+        });
+
+        document.getElementById("end-screen").classList.add("hidden");
+        document.getElementById("game-card").classList.remove("hidden");
+        
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        if (currentIndex >= questions.length || lives <= 0) {
+            endGame();
+            return;
+        }
+
+        const q = questions[currentIndex];
+
+        // 更新頂部資訊
+        document.getElementById("part-title").innerText = q.part;
+        document.getElementById("score-val").innerText = `⚡ SCORE: ${String(score).padStart(4, '0')}`;
+        document.getElementById("lives-val").innerText = `HP: ${'❤️'.repeat(lives)}`;
+        document.getElementById("stage-num").innerText = `STAGE ${currentIndex + 1} / ${questions.length}`;
+        document.getElementById("question-text").innerText = q.question;
+
+        const mcBox = document.getElementById("mc-box");
+        const fillBox = document.getElementById("fill-box");
+
+        if (q.type === "mc") {
+            mcBox.classList.remove("hidden");
+            fillBox.classList.add("hidden");
+            const btns = mcBox.querySelectorAll(".opt-btn");
+            btns.forEach((btn, idx) => {
+                btn.innerText = `[${String.fromCharCode(65 + idx)}] ${q.options[idx]}`;
+            });
+        } else {
+            mcBox.classList.add("hidden");
+            fillBox.classList.remove("hidden");
+            const input = document.getElementById("fill-input");
+            input.value = "";
+            input.focus();
+        }
+    }
+
+    function checkMC(idx) {
+        const q = questions[currentIndex];
+        const selected = q.options[idx];
+
+        if (selected === q.answer) {
+            score += 100;
+            showModal("⚔️ CRITICAL HIT!", `🎯 完美命中！得分 +100<br><br><b>【解析】</b>${q.explanation}`, "#50FA7B");
+        } else {
+            lives -= 1;
+            showModal("🛡️ SHIELD DAMAGED!", `💥 判定錯誤！損失 1 點生命值！<br><br>正確答案是：<b>${q.answer}</b><br><b>【解析】</b>${q.explanation}`, "#FF5555");
+        }
+    }
+
+    function checkFill() {
+        const q = questions[currentIndex];
+        const input = document.getElementById("fill-input").value.trim();
+
+        if (!input) {
+            alert("請輸入答案！");
+            return;
+        }
+
+        if (input === q.answer) {
+            score += 100;
+            showModal("⚔️ DECODE SUCCESS!", `🔓 解密成功！得分 +100<br><br><b>【解析】</b>${q.explanation}`, "#50FA7B");
+        } else {
+            lives -= 1;
+            showModal("🛡️ SHIELD DAMAGED!", `💥 解密失敗！損失 1 點生命值！<br>你的答案：${input}<br>正確答案是：<b>${q.answer}</b><br><br><b>【解析】</b>${q.explanation}`, "#FF5555");
+        }
+    }
+
+    function showModal(title, desc, color) {
+        const modal = document.getElementById("modal");
+        const titleEl = document.getElementById("modal-title");
+        titleEl.innerHTML = title;
+        titleEl.style.color = color;
+        document.getElementById("modal-desc").innerHTML = desc;
+        modal.style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("modal").style.display = "none";
+        currentIndex++;
+        renderQuestion();
+    }
+
+    function endGame() {
+        document.getElementById("game-card").classList.add("hidden");
+        const endScreen = document.getElementById("end-screen");
+        endScreen.classList.remove("hidden");
+
+        const titleEl = document.getElementById("end-title");
+        const descEl = document.getElementById("end-desc");
+
+        if (lives > 0) {
+            titleEl.innerText = "🏆 VICTORY! 完美通關";
+            titleEl.style.color = "#50FA7B";
+            descEl.innerText = "你已成功征服所有題目，展現了頂級語文實力！";
+        } else {
+            titleEl.innerText = "☠️ GAME OVER 挑戰失敗";
+            titleEl.style.color = "#FF5555";
+            descEl.innerText = "生命值已耗盡，整備裝備再來挑戰一次吧！";
+        }
+
+        document.getElementById("end-score").innerText = `最終得分：${String(score).padStart(4, '0')} PTS`;
+    }
+
+    // 啟動遊戲
+    initGame();
+</script>
+</body>
+</html>
